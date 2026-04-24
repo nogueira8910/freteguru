@@ -460,8 +460,8 @@ export default function DeliveryCalculator() {
     deliveryAddress.city
 
   return (
-    <Card className="mx-auto max-w-2xl border-border bg-card shadow-sm">
-      <CardHeader className="border-b border-border bg-muted/40">
+    <Card className="mx-auto w-full max-w-5xl border-border bg-card shadow-sm">
+      <CardHeader className="border-b border-border bg-muted/40 px-5 py-5 sm:px-6 lg:px-8">
         <CardTitle className="flex items-center gap-2 font-serif text-2xl font-normal text-foreground">
           <Route strokeWidth={1.5} className="h-5 w-5 text-primary" />
           Calculadora de Frete
@@ -470,7 +470,7 @@ export default function DeliveryCalculator() {
           Cálculo preciso considerando estradas, topografia e restrições viárias.
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-6 px-5 py-5 sm:px-6 lg:px-8 lg:py-7">
         {/* Seleção da Unidade */}
         <div className="space-y-2">
           <Label htmlFor="unit">Selecione a sua unidade *</Label>
@@ -512,8 +512,8 @@ export default function DeliveryCalculator() {
         <div className="space-y-4">
           <Label className="text-sm font-medium text-foreground">Endereço de destino</Label>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="md:col-span-2">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-12 md:gap-5">
+            <div className="md:col-span-8">
               <Label htmlFor="street">Rua *</Label>
               <Input
                 id="street"
@@ -522,7 +522,7 @@ export default function DeliveryCalculator() {
                 placeholder="Nome da rua"
               />
             </div>
-            <div>
+            <div className="md:col-span-4">
               <Label htmlFor="number">Número *</Label>
               <Input
                 id="number"
@@ -543,7 +543,7 @@ export default function DeliveryCalculator() {
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-5">
             <div>
               <Label htmlFor="neighborhood">Bairro *</Label>
               <Input

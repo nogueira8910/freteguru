@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Separator } from "@/components/ui/separator"
-import { MapPin, Search, Store, AlertTriangle, CheckCircle } from "lucide-react"
+import { MapPin, Search, AlertTriangle, CheckCircle, MessageCircle } from "lucide-react"
 import InteractiveMap from "./interactive-map"
 
 interface Unit {
@@ -20,6 +20,7 @@ interface Unit {
   state: string
   coordinates: { lat: number; lon: number }
   color: string
+  whatsapp: string
   kmlName?: string
 }
 
@@ -32,8 +33,8 @@ interface SearchAddress {
 }
 
 interface StoreResult {
-  store: Unit
-  distance: number
+  store: Unit | null
+  distance: number | null
   isInCoverage: boolean
   coordinates: { lat: number; lon: number }
 }
@@ -53,8 +54,9 @@ const units: Unit[] = [
     city: "Rio de Janeiro",
     state: "RJ",
     coordinates: { lat: -22.9504, lon: -43.1868 },
-    color: "#FF6B6B",
-    kmlName: "Botafogo",
+    color: "#E11D48",
+    whatsapp: "5521971802956",
+    kmlName: "GURUME BOTAFOGO",
   },
   {
     id: "rdb",
@@ -64,8 +66,9 @@ const units: Unit[] = [
     city: "Rio de Janeiro",
     state: "RJ",
     coordinates: { lat: -23.0002, lon: -43.3602 },
-    color: "#4ECDC4",
-    kmlName: "RDB",
+    color: "#0F766E",
+    whatsapp: "5521997741055",
+    kmlName: "GURUME RDB",
   },
   {
     id: "ipanema",
@@ -75,8 +78,9 @@ const units: Unit[] = [
     city: "Rio de Janeiro",
     state: "RJ",
     coordinates: { lat: -22.9848, lon: -43.2038 },
-    color: "#45B7D1",
-    kmlName: "Ipanema",
+    color: "#2563EB",
+    whatsapp: "5521997089865",
+    kmlName: "GURUME IPANEMA",
   },
   {
     id: "rdl",
@@ -86,8 +90,9 @@ const units: Unit[] = [
     city: "Rio de Janeiro",
     state: "RJ",
     coordinates: { lat: -22.9841, lon: -43.2235 },
-    color: "#96CEB4",
-    kmlName: "RDL",
+    color: "#F97316",
+    whatsapp: "552139003063",
+    kmlName: "GURUME RDL",
   },
   {
     id: "icarai",
@@ -97,8 +102,9 @@ const units: Unit[] = [
     city: "Niterói",
     state: "RJ",
     coordinates: { lat: -22.9097, lon: -43.1057 },
-    color: "#FFEAA7",
-    kmlName: "Icarai",
+    color: "#7C3AED",
+    whatsapp: "552136137175",
+    kmlName: "GURUME ICARAI",
   },
   {
     id: "tijuca",
@@ -108,8 +114,9 @@ const units: Unit[] = [
     city: "Rio de Janeiro",
     state: "RJ",
     coordinates: { lat: -22.9266, lon: -43.2359 },
-    color: "#DDA0DD",
-    kmlName: "Tijuca",
+    color: "#16A34A",
+    whatsapp: "5521997949667",
+    kmlName: "GURUME TIJUCA",
   },
   {
     id: "fashion-mall",
@@ -119,8 +126,9 @@ const units: Unit[] = [
     city: "Rio de Janeiro",
     state: "RJ",
     coordinates: { lat: -22.9964, lon: -43.249 },
-    color: "#98D8C8",
-    kmlName: "Fashion Mall",
+    color: "#DB2777",
+    whatsapp: "5521986691888",
+    kmlName: "GURUME FMALL",
   },
   {
     id: "rio-sul",
@@ -130,8 +138,9 @@ const units: Unit[] = [
     city: "Rio de Janeiro",
     state: "RJ",
     coordinates: { lat: -22.9493, lon: -43.1781 },
-    color: "#F7DC6F",
-    kmlName: "Rio Sul",
+    color: "#FACC15",
+    whatsapp: "552139005132",
+    kmlName: "GURUME RIO SUL",
   },
   {
     id: "bsb",
@@ -141,8 +150,9 @@ const units: Unit[] = [
     city: "Brasília",
     state: "DF",
     coordinates: { lat: -15.808, lon: -47.9494 },
-    color: "#BB8FCE",
-    kmlName: "BSB",
+    color: "#0891B2",
+    whatsapp: "556135504055",
+    kmlName: "GURUME BSB PARK",
   },
   {
     id: "sp",
@@ -152,8 +162,9 @@ const units: Unit[] = [
     city: "São Paulo",
     state: "SP",
     coordinates: { lat: -23.5677, lon: -46.702 },
-    color: "#85C1E9",
-    kmlName: "São Paulo",
+    color: "#A16207",
+    whatsapp: "551150436103",
+    kmlName: "GURUME VILA MADALENA JUL25",
   },
 ]
 
@@ -178,27 +189,6 @@ export default function StoreLocator() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string>("")
   const [polygons, setPolygons] = useState<KMLPolygon[]>([])
-
-  // Efeito para controlar o scroll da página quando o mapa está em fullscreen
-  useEffect(() => {
-    const handleFullscreenChange = () => {
-      const isMapFullscreen = document.querySelector(".fixed.inset-0.z-50")
-      if (isMapFullscreen) {
-        document.body.style.overflow = "hidden"
-      } else {
-        document.body.style.overflow = "unset"
-      }
-    }
-
-    // Observer para detectar mudanças no DOM
-    const observer = new MutationObserver(handleFullscreenChange)
-    observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ["class"] })
-
-    return () => {
-      observer.disconnect()
-      document.body.style.overflow = "unset"
-    }
-  }, [])
 
   // Parse KML data on component mount
   useEffect(() => {
@@ -227,25 +217,27 @@ export default function StoreLocator() {
       for (let i = 0; i < placemarks.length; i++) {
         const placemark = placemarks[i]
         const nameElement = placemark.getElementsByTagName("name")[0]
-        const coordinatesElement = placemark.getElementsByTagName("coordinates")[0]
+        const coordinatesElements = Array.from(placemark.getElementsByTagName("coordinates"))
 
-        if (nameElement && coordinatesElement) {
+        if (nameElement && coordinatesElements.length > 0) {
           const name = nameElement.textContent || ""
-          const coordinatesText = coordinatesElement.textContent || ""
 
-          // Parse coordinates (format: lon,lat,alt lon,lat,alt ...)
-          const coordinates = coordinatesText
-            .trim()
-            .split(/\s+/)
-            .map((coord) => {
-              const [lon, lat] = coord.split(",").map(Number)
-              return { lat, lon }
-            })
-            .filter((coord) => !isNaN(coord.lat) && !isNaN(coord.lon))
+          coordinatesElements.forEach((coordinatesElement) => {
+            const coordinatesText = coordinatesElement.textContent || ""
 
-          if (coordinates.length > 0) {
-            parsedPolygons.push({ name, coordinates })
-          }
+            const coordinates = coordinatesText
+              .trim()
+              .split(/\s+/)
+              .map((coord) => {
+                const [lon, lat] = coord.split(",").map(Number)
+                return { lat, lon }
+              })
+              .filter((coord) => !isNaN(coord.lat) && !isNaN(coord.lon))
+
+            if (coordinates.length > 0) {
+              parsedPolygons.push({ name, coordinates })
+            }
+          })
         }
       }
 
@@ -280,8 +272,8 @@ export default function StoreLocator() {
   const findServingStore = (coords: { lat: number; lon: number }): Unit | null => {
     for (const unit of units) {
       if (unit.kmlName) {
-        const polygon = polygons.find((p) => p.name === unit.kmlName)
-        if (polygon && isPointInPolygon(coords, polygon.coordinates)) {
+        const unitPolygons = polygons.filter((p) => p.name === unit.kmlName)
+        if (unitPolygons.some((polygon) => isPointInPolygon(coords, polygon.coordinates))) {
           return unit
         }
       }
@@ -354,7 +346,6 @@ export default function StoreLocator() {
       const servingStore = findServingStore(coords)
 
       if (servingStore) {
-        // Address is within coverage area
         const distance = calculateDistance(
           coords.lat,
           coords.lon,
@@ -367,20 +358,15 @@ export default function StoreLocator() {
           isInCoverage: true,
           coordinates: coords,
         })
+        setSelectedUnit(servingStore.id)
       } else {
-        // Address is not in any coverage area, find nearest store
-        const storeDistances = units.map((unit) => ({
-          store: unit,
-          distance: calculateDistance(coords.lat, coords.lon, unit.coordinates.lat, unit.coordinates.lon),
+        setResult({
+          store: null,
+          distance: null,
           isInCoverage: false,
           coordinates: coords,
-        }))
-
-        const nearestStore = storeDistances.reduce((nearest, current) =>
-          current.distance < nearest.distance ? current : nearest,
-        )
-
-        setResult(nearestStore)
+        })
+        setSelectedUnit("all")
       }
     } catch (error) {
       setError("Erro ao buscar a loja. Tente novamente.")
@@ -401,7 +387,7 @@ export default function StoreLocator() {
   const mapSearchResult = result
     ? {
         coordinates: result.coordinates,
-        store: result.store,
+        store: result.store ? { id: result.store.id, name: result.store.name } : null,
         isInCoverage: result.isInCoverage,
       }
     : null
@@ -410,10 +396,10 @@ export default function StoreLocator() {
   const unitsWithPolygons = units.filter((unit) => unit.kmlName && polygons.some((p) => p.name === unit.kmlName)).length
 
   return (
-    <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+    <div className="mx-auto flex w-full max-w-5xl flex-col gap-6">
       {/* Formulário de Busca */}
       <Card className="border-border bg-card shadow-sm">
-        <CardHeader className="border-b border-border bg-muted/40">
+        <CardHeader className="border-b border-border bg-muted/40 px-5 py-5 sm:px-6 lg:px-8">
           <CardTitle className="flex items-center gap-2 font-serif text-2xl font-normal text-foreground">
             <Search strokeWidth={1.5} className="h-5 w-5 text-primary" />
             Identificar Loja Responsável
@@ -422,12 +408,12 @@ export default function StoreLocator() {
             Informe o endereço para descobrir qual loja atende a região.
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6 pt-6">
+        <CardContent className="space-y-6 px-5 py-5 sm:px-6 lg:px-8 lg:py-7">
           <div className="space-y-4">
             <Label className="text-sm font-medium text-foreground">Endereço para consulta</Label>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="md:col-span-2">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-12 md:gap-5">
+              <div className="md:col-span-8">
                 <Label htmlFor="search-street">Rua *</Label>
                 <Input
                   id="search-street"
@@ -436,7 +422,7 @@ export default function StoreLocator() {
                   placeholder="Nome da rua"
                 />
               </div>
-              <div>
+              <div className="md:col-span-4">
                 <Label htmlFor="search-number">Número *</Label>
                 <Input
                   id="search-number"
@@ -457,7 +443,7 @@ export default function StoreLocator() {
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-5">
               <div>
                 <Label htmlFor="search-neighborhood">Bairro *</Label>
                 <Input
@@ -510,43 +496,42 @@ export default function StoreLocator() {
                   {result.isInCoverage ? (
                     <CheckCircle strokeWidth={1.5} className="h-5 w-5" />
                   ) : (
-                    <Store strokeWidth={1.5} className="h-5 w-5" />
+                    <AlertTriangle strokeWidth={1.5} className="h-5 w-5" />
                   )}
-                  {result.isInCoverage ? "Loja que Atende" : "Loja Mais Próxima"}
+                  {result.isInCoverage ? "Loja que Atende" : "Endereço não atendido"}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Loja</span>
-                    <span className="font-serif text-lg text-foreground">{result.store.name}</span>
-                  </div>
-                  <div className="flex items-center justify-between gap-4">
-                    <span className="text-sm text-muted-foreground">Endereço</span>
-                    <span className="text-right text-sm text-foreground">
-                      {result.store.address}, {result.store.neighborhood}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Distância</span>
-                    <span className="font-mono text-sm font-medium text-foreground">
-                      {result.distance.toFixed(1)} km
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between border-t border-border pt-3">
-                    <span className="text-sm text-muted-foreground">Status</span>
-                    <span
-                      className={`font-mono text-xs uppercase tracking-wider ${
-                        result.isInCoverage ? "text-primary" : "text-accent"
-                      }`}
-                    >
-                      {result.isInCoverage ? "Dentro da cobertura" : "Fora da cobertura"}
-                    </span>
-                  </div>
-                  {!result.isInCoverage && (
+                  {result.store ? (
+                    <>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-muted-foreground">Loja</span>
+                        <span className="font-serif text-lg text-foreground">{result.store.name}</span>
+                      </div>
+                      <div className="flex items-center justify-between gap-4">
+                        <span className="text-sm text-muted-foreground">Endereço</span>
+                        <span className="text-right text-sm text-foreground">
+                          {result.store.address}, {result.store.neighborhood}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-muted-foreground">Distância</span>
+                        <span className="font-mono text-sm font-medium text-foreground">
+                          {result.distance?.toFixed(1)} km
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between border-t border-border pt-3">
+                        <span className="text-sm text-muted-foreground">Status</span>
+                        <span className="font-mono text-xs uppercase tracking-wider text-primary">
+                          Dentro da cobertura
+                        </span>
+                      </div>
+                    </>
+                  ) : (
                     <div className="mt-3 rounded-md border border-accent/30 bg-background p-3 text-xs text-foreground">
                       <AlertTriangle strokeWidth={1.5} className="mr-1 inline h-3 w-3 text-accent" />
-                      Este endereço está fora das áreas de cobertura. Verifique se a entrega é possível.
+                      Este endereço não é atendido no momento por nenhuma unidade cadastrada.
                     </div>
                   )}
                 </div>
@@ -558,18 +543,18 @@ export default function StoreLocator() {
 
       {/* Mapa e Filtros */}
       <Card className="border-border bg-card shadow-sm">
-        <CardHeader className="border-b border-border bg-muted/40">
+        <CardHeader className="border-b border-border bg-muted/40 px-5 py-5 sm:px-6 lg:px-8">
           <CardTitle className="flex items-center gap-2 font-serif text-2xl font-normal text-foreground">
             <MapPin strokeWidth={1.5} className="h-5 w-5 text-primary" />
             Áreas de Cobertura
           </CardTitle>
           <CardDescription className="text-muted-foreground">
-            Visualize as áreas de atendimento de cada unidade (clique no ícone de expansão para tela cheia).
+            Visualize as áreas de atendimento de cada unidade.
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4 pt-6">
+        <CardContent className="space-y-4 px-5 py-5 sm:px-6 lg:px-8 lg:py-7">
           {/* Filtro de Unidade */}
-          <div className="space-y-2 relative z-10">
+          <div className="relative z-10 space-y-2">
             <Label htmlFor="unit-filter">Filtrar por unidade</Label>
             <Select value={selectedUnit} onValueChange={setSelectedUnit}>
               <SelectTrigger className="relative z-10">
@@ -577,14 +562,11 @@ export default function StoreLocator() {
               </SelectTrigger>
               <SelectContent className="relative z-50">
                 <SelectItem value="all">Todas as unidades</SelectItem>
-                {units.map((unit) => {
-                  const hasPolygon = unit.kmlName && polygons.some((p) => p.name === unit.kmlName)
-                  return (
-                    <SelectItem key={unit.id} value={unit.id}>
-                      {unit.name} {hasPolygon ? "✓" : "⚠"}
-                    </SelectItem>
-                  )
-                })}
+                {units.map((unit) => (
+                  <SelectItem key={unit.id} value={unit.id}>
+                    {unit.name}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -592,7 +574,7 @@ export default function StoreLocator() {
           <Separator className="my-4" />
 
           {/* Mapa Interativo */}
-          <div className="relative z-0">
+          <div className="relative">
             <InteractiveMap
               polygons={polygons}
               units={units}
@@ -637,12 +619,22 @@ export default function StoreLocator() {
                       <span className="font-medium text-foreground">{unit.name}</span>
                       <span className="text-muted-foreground">({unit.city})</span>
                       <span
-                        className={`ml-auto font-mono text-[10px] uppercase tracking-wider ${
+                        className={`font-mono text-[10px] uppercase tracking-wider ${
                           hasPolygon ? "text-primary" : "text-accent"
                         }`}
                       >
                         {hasPolygon ? "mapeada" : "sem dados"}
                       </span>
+                      <a
+                        href={`https://wa.me/${unit.whatsapp}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={`Abrir WhatsApp da unidade ${unit.name}`}
+                        title={`WhatsApp ${unit.name}`}
+                        className="ml-auto flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-md border border-[hsl(var(--whatsapp)/0.35)] bg-[hsl(var(--whatsapp)/0.12)] text-[hsl(var(--whatsapp))] transition-colors hover:bg-[hsl(var(--whatsapp)/0.22)]"
+                      >
+                        <MessageCircle strokeWidth={1.75} className="h-4 w-4" />
+                      </a>
                     </div>
                   )
                 })}

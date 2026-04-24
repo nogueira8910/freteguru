@@ -23,7 +23,7 @@ interface MapProps {
     store: {
       id: string
       name: string
-    }
+    } | null
     isInCoverage: boolean
   } | null
 }
@@ -38,7 +38,6 @@ export default function InteractiveMap({ polygons, units, selectedUnit, searchRe
   const mapRef = useRef<HTMLDivElement>(null)
   const mapInstanceRef = useRef<any>(null)
   const [isLoaded, setIsLoaded] = useState(false)
-  const [isFullscreen, setIsFullscreen] = useState(false)
 
   // Load Leaflet dynamically
   useEffect(() => {
@@ -73,8 +72,10 @@ export default function InteractiveMap({ polygons, units, selectedUnit, searchRe
     const map = window.L.map(mapRef.current).setView([-22.9068, -43.1729], 10)
 
     // Add tile layer
-    window.L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    window.L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      detectRetina: true,
+      maxZoom: 19,
     }).addTo(map)
 
     mapInstanceRef.current = map
@@ -139,8 +140,8 @@ export default function InteractiveMap({ polygons, units, selectedUnit, searchRe
             // Selected unit - prominent Google Maps style
             color: unit.color, // Solid border color
             fillColor: unit.color, // Fill color
-            fillOpacity: 0.4, // Semi-transparent fill
-            weight: 4, // Thick border
+            fillOpacity: 0.32, // Semi-transparent fill
+            weight: 7, // Bold border
             opacity: 1, // Solid border
             isPolygon: true,
           }
@@ -148,9 +149,9 @@ export default function InteractiveMap({ polygons, units, selectedUnit, searchRe
             // Non-selected units - subtle style
             color: unit.color,
             fillColor: unit.color,
-            fillOpacity: 0.2,
-            weight: 2,
-            opacity: 0.7,
+            fillOpacity: 0.16,
+            weight: 5,
+            opacity: 0.95,
             isPolygon: true,
           }
 
@@ -319,7 +320,11 @@ export default function InteractiveMap({ polygons, units, selectedUnit, searchRe
                 ${searchResult.isInCoverage ? "✅ DENTRO DA ÁREA DE COBERTURA" : "⚠️ FORA DA ÁREA DE COBERTURA"}
               </div>
               <div class="text-xs ${searchResult.isInCoverage ? "text-green-600" : "text-orange-600"} mt-1">
-                Loja responsável: ${searchResult.store.name}
+                ${
+                  searchResult.store
+                    ? `Loja responsável: ${searchResult.store.name}`
+                    : "Endereço não atendido no momento"
+                }
               </div>
             </div>
           </div>
@@ -348,13 +353,9 @@ export default function InteractiveMap({ polygons, units, selectedUnit, searchRe
     }
   }, [polygons, units, selectedUnit, searchResult, isLoaded])
 
-  const toggleFullscreen = () => {
-    setIsFullscreen(!isFullscreen)
-  }
-
   if (!isLoaded) {
     return (
-      <div className="relative z-0 flex h-96 items-center justify-center rounded-lg border-2 border-dashed border-border bg-muted">
+      <div className="relative z-0 flex h-[clamp(24rem,45vh,34rem)] items-center justify-center rounded-lg border-2 border-dashed border-border bg-muted">
         <div className="text-center">
           <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-b-2 border-primary"></div>
           <p className="font-medium text-muted-foreground">Carregando mapa...</p>
@@ -365,44 +366,18 @@ export default function InteractiveMap({ polygons, units, selectedUnit, searchRe
 
   return (
     <div className="space-y-4">
-      <div className={`relative ${isFullscreen ? "fixed inset-0 z-50 bg-background" : ""}`}>
-        {/* Botão de Fullscreen */}
-        <button
-          onClick={toggleFullscreen}
-          className="absolute right-2 top-2 z-10 rounded-md border border-border bg-card p-2 shadow-sm transition-colors hover:bg-muted"
-          title={isFullscreen ? "Sair do modo tela cheia" : "Expandir mapa"}
-        >
-          {isFullscreen ? (
-            <svg className="h-4 w-4 text-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          ) : (
-            <svg className="h-4 w-4 text-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"
-              />
-            </svg>
-          )}
-        </button>
-
+      <div className="relative">
         <div
           ref={mapRef}
-          className={`relative z-0 w-full rounded-lg border border-border shadow-sm ${
-            isFullscreen ? "h-screen" : "h-96"
-          }`}
+          className="relative z-0 h-[clamp(24rem,45vh,34rem)] w-full rounded-lg border border-border shadow-sm"
         />
       </div>
 
-      {!isFullscreen && (
-        <div className="text-center text-xs text-muted-foreground">
-          {selectedUnit !== "all"
-            ? "Áreas coloridas mostram regiões de cobertura baseadas em dados KML reais"
-            : "Selecione uma unidade para visualizar sua área de cobertura (se disponível)"}
-        </div>
-      )}
+      <div className="text-center text-xs text-muted-foreground">
+        {selectedUnit !== "all"
+          ? "Áreas coloridas mostram regiões de cobertura baseadas em dados KML reais"
+          : "Selecione uma unidade para visualizar sua área de cobertura (se disponível)"}
+      </div>
     </div>
   )
 }

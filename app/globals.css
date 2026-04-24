@@ -110,6 +110,14 @@
     @apply bg-background text-foreground font-sans;
   }
 
+  .leaflet-container {
+    background: hsl(var(--muted));
+  }
+
+  .leaflet-container .leaflet-tile {
+    max-width: none !important;
+  }
+
   h1,
   h2,
   h3,

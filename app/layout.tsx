@@ -22,7 +22,7 @@ const jetBrainsMono = JetBrains_Mono({
 })
 
 export const metadata: Metadata = {
-  title: "ChatGuru — Sistema de Delivery",
+  title: "Frete Guru",
   description: "Calculadora de frete e identificador de áreas de cobertura",
   generator: "v0.app",
   icons: {

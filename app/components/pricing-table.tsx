@@ -57,15 +57,15 @@ function FeeTable({ rows, showTime = false }: { rows: FeeRow[]; showTime?: boole
       <table className="w-full">
         <thead className="bg-muted/60">
           <tr>
-            <th className="px-4 py-3 text-left font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+            <th className="px-3 py-3 text-left font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
               Faixa
             </th>
             {showTime && (
-              <th className="px-4 py-3 text-center font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+              <th className="px-3 py-3 text-center font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
                 Tempo
               </th>
             )}
-            <th className="px-4 py-3 text-right font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+            <th className="px-3 py-3 text-right font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
               Valor
             </th>
           </tr>
@@ -76,13 +76,13 @@ function FeeTable({ rows, showTime = false }: { rows: FeeRow[]; showTime?: boole
               key={row.range}
               className={`border-t border-border ${idx % 2 === 0 ? "bg-card" : "bg-muted/20"}`}
             >
-              <td className="px-4 py-3 text-sm text-foreground">{row.range}</td>
+              <td className="px-3 py-3 text-sm text-foreground">{row.range}</td>
               {showTime && (
-                <td className="px-4 py-3 text-center font-mono text-xs text-muted-foreground">
+                <td className="px-3 py-3 text-center font-mono text-xs text-muted-foreground">
                   {row.time ? `${row.time} min` : "—"}
                 </td>
               )}
-              <td className="px-4 py-3 text-right">
+              <td className="px-3 py-3 text-right">
                 <span className="font-serif text-base text-primary">{formatBRL(row.fee)}</span>
               </td>
             </tr>
@@ -104,13 +104,13 @@ export default function PricingTable() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
         {/* RJ */}
         <Card className="border-border bg-card shadow-sm">
-          <CardHeader className="border-b border-border bg-muted/40">
+          <CardHeader className="border-b border-border bg-muted/40 p-5">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <CardTitle className="flex items-center gap-2 font-serif text-2xl font-normal text-foreground">
+                <CardTitle className="flex items-center gap-2 font-serif text-xl font-normal text-foreground">
                   <MapPin strokeWidth={1.5} className="h-5 w-5 text-primary" />
                   Rio de Janeiro
                 </CardTitle>
@@ -123,7 +123,7 @@ export default function PricingTable() {
               </span>
             </div>
           </CardHeader>
-          <CardContent className="space-y-4 pt-6">
+          <CardContent className="space-y-4 p-5">
             <div>
               <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
                 Unidades incluídas
@@ -145,10 +145,10 @@ export default function PricingTable() {
 
         {/* BSB */}
         <Card className="border-border bg-card shadow-sm">
-          <CardHeader className="border-b border-border bg-muted/40">
+          <CardHeader className="border-b border-border bg-muted/40 p-5">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <CardTitle className="flex items-center gap-2 font-serif text-2xl font-normal text-foreground">
+                <CardTitle className="flex items-center gap-2 font-serif text-xl font-normal text-foreground">
                   <MapPin strokeWidth={1.5} className="h-5 w-5 text-primary" />
                   Brasília
                 </CardTitle>
@@ -161,7 +161,7 @@ export default function PricingTable() {
               </span>
             </div>
           </CardHeader>
-          <CardContent className="space-y-4 pt-6">
+          <CardContent className="space-y-4 p-5">
             <div>
               <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
                 Unidades incluídas
@@ -177,11 +177,11 @@ export default function PricingTable() {
         </Card>
 
         {/* SP */}
-        <Card className="border-border bg-card shadow-sm xl:col-span-2">
-          <CardHeader className="border-b border-border bg-muted/40">
+        <Card className="border-border bg-card shadow-sm">
+          <CardHeader className="border-b border-border bg-muted/40 p-5">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <CardTitle className="flex items-center gap-2 font-serif text-2xl font-normal text-foreground">
+                <CardTitle className="flex items-center gap-2 font-serif text-xl font-normal text-foreground">
                   <MapPin strokeWidth={1.5} className="h-5 w-5 text-primary" />
                   São Paulo
                 </CardTitle>
@@ -194,7 +194,7 @@ export default function PricingTable() {
               </span>
             </div>
           </CardHeader>
-          <CardContent className="space-y-4 pt-6">
+          <CardContent className="space-y-4 p-5">
             <div>
               <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
                 Unidades incluídas
