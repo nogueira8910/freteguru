@@ -58,6 +58,10 @@
     --sidebar-accent-foreground: 40 37% 97%;
     --sidebar-border: 165 40% 22%;
     --sidebar-ring: 37 56% 51%;
+
+    --font-sans: "DM Sans", "Inter", "Segoe UI", Arial, sans-serif;
+    --font-serif: "DM Serif Display", Georgia, "Times New Roman", serif;
+    --font-mono: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
   }
 
   .dark {
