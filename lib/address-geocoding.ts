@@ -34,6 +34,61 @@ interface NominatimResult {
 
 const knownLocations: KnownLocation[] = [
   {
+    aliases: ["rua ipu 12 botafogo rio de janeiro"],
+    lat: -22.9504,
+    lon: -43.1868,
+  },
+  {
+    aliases: ["avenida das americas 7777 barra da tijuca rio de janeiro"],
+    lat: -23.0002,
+    lon: -43.3602,
+  },
+  {
+    aliases: [
+      "rua anibal de mendonca 132 ipanema rio de janeiro",
+      "rua anibal mendonca 132 ipanema rio de janeiro",
+      "anibal de mendonca 132 ipanema",
+      "anibal mendonca 132 ipanema",
+    ],
+    lat: -22.9848,
+    lon: -43.2038,
+  },
+  {
+    aliases: ["avenida ataulfo de paiva 270 leblon rio de janeiro"],
+    lat: -22.9841,
+    lon: -43.2235,
+  },
+  {
+    aliases: ["rua nobrega 198 icarai niteroi"],
+    lat: -22.9097,
+    lon: -43.1057,
+  },
+  {
+    aliases: ["avenida maracana 987 tijuca rio de janeiro"],
+    lat: -22.9266,
+    lon: -43.2359,
+  },
+  {
+    aliases: ["estrada da gavea 899 sao conrado rio de janeiro"],
+    lat: -22.9964,
+    lon: -43.249,
+  },
+  {
+    aliases: ["rua lauro muller 116 botafogo rio de janeiro"],
+    lat: -22.9493,
+    lon: -43.1781,
+  },
+  {
+    aliases: ["smas trecho 1 zona industrial brasilia"],
+    lat: -15.808,
+    lon: -47.9494,
+  },
+  {
+    aliases: ["rua natingui 1536 pinheiros sao paulo"],
+    lat: -23.5677,
+    lon: -46.702,
+  },
+  {
     aliases: ["rua engenheiro neves da rocha 538 itanhanga rio de janeiro"],
     lat: -22.996131,
     lon: -43.299325,
