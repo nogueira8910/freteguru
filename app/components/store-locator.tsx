@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Separator } from "@/components/ui/separator"
 import { MapPin, Search, AlertTriangle, CheckCircle, MessageCircle } from "lucide-react"
+import { geocodeAddressPrecise } from "@/lib/address-geocoding"
 import InteractiveMap from "./interactive-map"
 
 interface Unit {
@@ -168,14 +169,6 @@ const units: Unit[] = [
   },
 ]
 
-const knownLocations = [
-  {
-    address: "rua engenheiro neves da rocha 538 itanhanga rio de janeiro",
-    lat: -22.996131,
-    lon: -43.299325,
-  },
-]
-
 export default function StoreLocator() {
   const [selectedUnit, setSelectedUnit] = useState<string>("all")
   const [searchAddress, setSearchAddress] = useState<SearchAddress>({
@@ -281,35 +274,6 @@ export default function StoreLocator() {
     return null
   }
 
-  // Função para geocodificar endereço
-  const geocodeAddress = async (address: string): Promise<{ lat: number; lon: number } | null> => {
-    const normalizedAddress = address.toLowerCase().replace(/,/g, " ").replace(/\s+/g, " ").trim()
-    const knownLocation = knownLocations.find((location) => normalizedAddress.includes(location.address.toLowerCase()))
-
-    if (knownLocation) {
-      return { lat: knownLocation.lat, lon: knownLocation.lon }
-    }
-
-    try {
-      const encodedAddress = encodeURIComponent(address)
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodedAddress}&limit=1&countrycodes=br`,
-      )
-      const data = await response.json()
-
-      if (data && data.length > 0) {
-        return {
-          lat: Number.parseFloat(data[0].lat),
-          lon: Number.parseFloat(data[0].lon),
-        }
-      }
-      return null
-    } catch (error) {
-      console.error("Erro de geocoding:", error)
-      return null
-    }
-  }
-
   // Função para calcular distância
   const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
     const R = 6371
@@ -333,8 +297,7 @@ export default function StoreLocator() {
     setError("")
 
     try {
-      const fullAddress = `${searchAddress.street} ${searchAddress.number}, ${searchAddress.neighborhood}, ${searchAddress.city}, Brasil`
-      const coords = await geocodeAddress(fullAddress)
+      const coords = await geocodeAddressPrecise(searchAddress)
 
       if (!coords) {
         setError("Endereço não encontrado. Verifique se os dados estão corretos.")

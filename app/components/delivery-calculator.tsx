@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Separator } from "@/components/ui/separator"
 import { Calculator, AlertTriangle, Route } from "lucide-react"
+import { geocodeAddressPrecise } from "@/lib/address-geocoding"
 
 interface Unit {
   id: string
@@ -179,14 +180,6 @@ const regionCorrections = [
   },
 ]
 
-const knownLocations = [
-  {
-    address: "rua engenheiro neves da rocha 538 itanhanga rio de janeiro",
-    lat: -22.996131,
-    lon: -43.299325,
-  },
-]
-
 // Função para calcular distância de Haversine
 const haversineDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
   const R = 6371
@@ -284,40 +277,6 @@ const calculateRealWorldDistance = async (
   }
 }
 
-const geocodeAddressPrecise = async (address: string): Promise<{ lat: number; lon: number } | null> => {
-  const normalizedAddress = address.toLowerCase().replace(/,/g, " ").replace(/\s+/g, " ").trim()
-  const knownLocation = knownLocations.find((location) => normalizedAddress.includes(location.address.toLowerCase()))
-
-  if (knownLocation) {
-    return { lat: knownLocation.lat, lon: knownLocation.lon }
-  }
-
-  try {
-    const encodedAddress = encodeURIComponent(address)
-    const response = await fetch(
-      `https://nominatim.openstreetmap.org/search?format=json&q=${encodedAddress}&limit=1&countrycodes=br`,
-      {
-        headers: { "Accept-Language": "pt-BR" },
-        cache: "force-cache",
-      },
-    )
-
-    const data = await response.json()
-
-    if (data && data.length > 0) {
-      return {
-        lat: Number.parseFloat(data[0].lat),
-        lon: Number.parseFloat(data[0].lon),
-      }
-    }
-
-    return null
-  } catch (error) {
-    console.error("Erro de geocoding:", error)
-    return null
-  }
-}
-
 export default function DeliveryCalculator() {
   const [selectedUnit, setSelectedUnit] = useState<string>("")
   const [deliveryAddress, setDeliveryAddress] = useState<DeliveryAddress>({
@@ -388,29 +347,12 @@ export default function DeliveryCalculator() {
       let originCoords = selectedUnitData.coordinates || null
 
       if (!originCoords) {
-        const originAddress = `${selectedUnitData.address}, ${selectedUnitData.neighborhood}, ${selectedUnitData.city}, ${selectedUnitData.state}, Brasil`
-        originCoords = await geocodeAddressPrecise(originAddress)
-
-        if (!originCoords) {
-          setError("Não foi possível localizar o endereço da unidade com precisão")
-          setLoading(false)
-          return
-        }
+        setError("Não foi possível localizar o endereço da unidade com precisão")
+        setLoading(false)
+        return
       }
 
-      const destinationAddress = `${deliveryAddress.street} ${deliveryAddress.number}, ${deliveryAddress.neighborhood}, ${deliveryAddress.city}, Brasil`
-
-      let destinationCoords = null
-
-      if (
-        deliveryAddress.street.toLowerCase().includes("engenheiro neves da rocha") &&
-        deliveryAddress.number === "538" &&
-        deliveryAddress.neighborhood.toLowerCase().includes("itanhanga")
-      ) {
-        destinationCoords = { lat: -22.996131, lon: -43.299325 }
-      } else {
-        destinationCoords = await geocodeAddressPrecise(destinationAddress)
-      }
+      const destinationCoords = await geocodeAddressPrecise(deliveryAddress)
 
       if (!destinationCoords) {
         setError("Endereço de destino não encontrado. Verifique se os dados estão corretos e completos.")

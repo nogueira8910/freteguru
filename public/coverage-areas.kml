@@ -20,59 +20,6 @@
 			</PolyStyle>
 		</Style>
 	</gx:CascadingStyle>
-	<gx:CascadingStyle kml:id="__managed_style_17C5FBF3A63E753E67AB">
-		<Style>
-			<IconStyle>
-				<Icon>
-					<href>https://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
-				</Icon>
-			</IconStyle>
-			<LineStyle>
-				<color>8f2f2fd3</color>
-				<width>10</width>
-			</LineStyle>
-			<PolyStyle>
-				<color>3f2f2fd3</color>
-			</PolyStyle>
-		</Style>
-	</gx:CascadingStyle>
-	<StyleMap id="__managed_style_02D8C35A623E753E67AB">
-		<Pair>
-			<key>normal</key>
-			<styleUrl>#__managed_style_17C5FBF3A63E753E67AB</styleUrl>
-		</Pair>
-		<Pair>
-			<key>highlight</key>
-			<styleUrl>#__managed_style_23EA08957F3E753E67AB</styleUrl>
-		</Pair>
-	</StyleMap>
-	<gx:CascadingStyle kml:id="__managed_style_2009DBC5D93E753F27CF">
-		<Style>
-			<IconStyle>
-				<scale>1.2</scale>
-				<Icon>
-					<href>https://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
-				</Icon>
-			</IconStyle>
-			<LineStyle>
-				<color>8f2dc0fb</color>
-				<width>15</width>
-			</LineStyle>
-			<PolyStyle>
-				<color>3f2dc0fb</color>
-			</PolyStyle>
-		</Style>
-	</gx:CascadingStyle>
-	<StyleMap id="__managed_style_0150AEE3373E753F27CF">
-		<Pair>
-			<key>normal</key>
-			<styleUrl>#__managed_style_1551CE71F03E753F27CF</styleUrl>
-		</Pair>
-		<Pair>
-			<key>highlight</key>
-			<styleUrl>#__managed_style_2009DBC5D93E753F27CF</styleUrl>
-		</Pair>
-	</StyleMap>
 	<gx:CascadingStyle kml:id="__managed_style_1551CE71F03E753F27CF">
 		<Style>
 			<IconStyle>
@@ -89,6 +36,16 @@
 			</PolyStyle>
 		</Style>
 	</gx:CascadingStyle>
+	<StyleMap id="__managed_style_0150AEE3373E753F27CF">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#__managed_style_1551CE71F03E753F27CF</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#__managed_style_2009DBC5D93E753F27CF</styleUrl>
+		</Pair>
+	</StyleMap>
 	<gx:CascadingStyle kml:id="__managed_style_2AE33A3DF13E753EB687">
 		<Style>
 			<IconStyle>
@@ -103,6 +60,39 @@
 			</LineStyle>
 			<PolyStyle>
 				<color>3f6abb66</color>
+			</PolyStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<gx:CascadingStyle kml:id="__managed_style_17C5FBF3A63E753E67AB">
+		<Style>
+			<IconStyle>
+				<Icon>
+					<href>https://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+				</Icon>
+			</IconStyle>
+			<LineStyle>
+				<color>8f2f2fd3</color>
+				<width>10</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>3f2f2fd3</color>
+			</PolyStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<gx:CascadingStyle kml:id="__managed_style_2009DBC5D93E753F27CF">
+		<Style>
+			<IconStyle>
+				<scale>1.2</scale>
+				<Icon>
+					<href>https://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+				</Icon>
+			</IconStyle>
+			<LineStyle>
+				<color>8f2dc0fb</color>
+				<width>15</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>3f2dc0fb</color>
 			</PolyStyle>
 		</Style>
 	</gx:CascadingStyle>
@@ -130,6 +120,16 @@
 		<Pair>
 			<key>highlight</key>
 			<styleUrl>#__managed_style_2AE33A3DF13E753EB687</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="__managed_style_02D8C35A623E753E67AB">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#__managed_style_17C5FBF3A63E753E67AB</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#__managed_style_23EA08957F3E753E67AB</styleUrl>
 		</Pair>
 	</StyleMap>
 	<Style id="estilo">
