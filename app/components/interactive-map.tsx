@@ -34,6 +34,8 @@ declare global {
   }
 }
 
+const normalizeKMLName = (value: string) => value.trim().replace(/\s+/g, " ").toUpperCase()
+
 export default function InteractiveMap({ polygons, units, selectedUnit, searchResult }: MapProps) {
   const mapRef = useRef<HTMLDivElement>(null)
   const mapInstanceRef = useRef<any>(null)
@@ -120,7 +122,7 @@ export default function InteractiveMap({ polygons, units, selectedUnit, searchRe
 
     // Add polygons ONLY if they exist in KML data
     polygons.forEach((polygon) => {
-      const unit = units.find((u) => u.kmlName === polygon.name)
+      const unit = units.find((u) => normalizeKMLName(u.kmlName || "") === normalizeKMLName(polygon.name))
       if (!unit) {
         console.log(`No unit found for polygon: ${polygon.name}`)
         return
@@ -208,7 +210,8 @@ export default function InteractiveMap({ polygons, units, selectedUnit, searchRe
       if (selectedUnit !== "all" && unit.id !== selectedUnit) return
 
       const isSelected = selectedUnit !== "all" && unit.id === selectedUnit
-      const hasPolygon = unit.kmlName && polygons.some((p) => p.name === unit.kmlName)
+      const hasPolygon =
+        unit.kmlName && polygons.some((p) => normalizeKMLName(p.name) === normalizeKMLName(unit.kmlName || ""))
 
       // Enhanced marker styling for selected unit
       const markerStyle = isSelected

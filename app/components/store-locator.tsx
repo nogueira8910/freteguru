@@ -47,6 +47,14 @@ interface KMLPolygon {
   coordinates: Array<{ lat: number; lon: number }>
 }
 
+const KML_SOURCES = [
+  "/coverage-areas.kml",
+  "https://freteguru.vercel.app/coverage-areas.kml",
+  "https://v0-freteguru.vercel.app/coverage-areas.kml",
+]
+
+const normalizeKMLName = (value: string) => value.trim().replace(/\s+/g, " ").toUpperCase()
+
 // Unidades com cores para o mapa e nomes correspondentes no KML
 const units: Unit[] = [
   {
@@ -192,15 +200,38 @@ export default function StoreLocator() {
   // Parse KML data on component mount
   useEffect(() => {
     const loadKML = async () => {
-      try {
-        const response = await fetch("/coverage-areas.kml")
-        const kmlText = await response.text()
-        const parsedPolygons = parseKMLData(kmlText)
-        setPolygons(parsedPolygons)
-        console.log("KML carregado com sucesso:", parsedPolygons.length, "polígonos")
-      } catch (error) {
-        console.error("Erro ao carregar KML:", error)
+      for (const source of KML_SOURCES) {
+        try {
+          const response = await fetch(source)
+
+          if (!response.ok) {
+            console.warn(`KML não encontrado em ${source}:`, response.status)
+            continue
+          }
+
+          const kmlText = await response.text()
+
+          if (!kmlText.includes("<Placemark")) {
+            console.warn(`Resposta sem dados KML válidos em ${source}`)
+            continue
+          }
+
+          const parsedPolygons = parseKMLData(kmlText)
+
+          if (parsedPolygons.length === 0) {
+            console.warn(`KML carregado sem polígonos em ${source}`)
+            continue
+          }
+
+          setPolygons(parsedPolygons)
+          console.log("KML carregado com sucesso:", parsedPolygons.length, "polígonos", source)
+          return
+        } catch (error) {
+          console.error(`Erro ao carregar KML em ${source}:`, error)
+        }
       }
+
+      setPolygons([])
     }
 
     loadKML()
@@ -219,7 +250,7 @@ export default function StoreLocator() {
         const coordinatesElements = Array.from(placemark.getElementsByTagName("coordinates"))
 
         if (nameElement && coordinatesElements.length > 0) {
-          const name = nameElement.textContent || ""
+          const name = normalizeKMLName(nameElement.textContent || "")
 
           coordinatesElements.forEach((coordinatesElement) => {
             const coordinatesText = coordinatesElement.textContent || ""
@@ -271,7 +302,7 @@ export default function StoreLocator() {
   const findServingStore = (coords: { lat: number; lon: number }): Unit | null => {
     for (const unit of units) {
       if (unit.kmlName) {
-        const unitPolygons = polygons.filter((p) => p.name === unit.kmlName)
+        const unitPolygons = polygons.filter((p) => normalizeKMLName(p.name) === normalizeKMLName(unit.kmlName || ""))
         if (unitPolygons.some((polygon) => isPointInPolygon(coords, polygon.coordinates))) {
           return unit
         }
@@ -413,7 +444,9 @@ export default function StoreLocator() {
     : null
 
   // Count units with polygon data
-  const unitsWithPolygons = units.filter((unit) => unit.kmlName && polygons.some((p) => p.name === unit.kmlName)).length
+  const unitsWithPolygons = units.filter(
+    (unit) => unit.kmlName && polygons.some((p) => normalizeKMLName(p.name) === normalizeKMLName(unit.kmlName || "")),
+  ).length
 
   return (
     <div className="mx-auto flex w-full max-w-5xl flex-col gap-6">
@@ -663,7 +696,8 @@ export default function StoreLocator() {
               {units
                 .filter((unit) => selectedUnit === "all" || unit.id === selectedUnit)
                 .map((unit) => {
-                  const hasPolygon = unit.kmlName && polygons.some((p) => p.name === unit.kmlName)
+                  const hasPolygon =
+                    unit.kmlName && polygons.some((p) => normalizeKMLName(p.name) === normalizeKMLName(unit.kmlName || ""))
                   return (
                     <div
                       key={unit.id}
