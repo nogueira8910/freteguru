@@ -50,8 +50,8 @@ const knownLocations: KnownLocation[] = [
       "anibal de mendonca 132 ipanema",
       "anibal mendonca 132 ipanema",
     ],
-    lat: -22.9848,
-    lon: -43.2038,
+    lat: -22.982778,
+    lon: -43.210833,
   },
   {
     aliases: ["avenida ataulfo de paiva 270 leblon rio de janeiro"],

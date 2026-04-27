@@ -97,7 +97,7 @@ const units: Unit[] = [
     neighborhood: "Ipanema",
     city: "Rio de Janeiro",
     state: "RJ",
-    coordinates: { lat: -22.9848, lon: -43.2038 },
+    coordinates: { lat: -22.982778, lon: -43.210833 },
     color: "#2563EB",
     whatsapp: "5521997089865",
     kmlName: "GURUME IPANEMA",
