@@ -451,6 +451,7 @@ export default function DeliveryCalculator() {
   }
 
   const hasValidPostalCode = !usePostalCode || onlyPostalCodeDigits(deliveryAddress.postalCode).length === 8
+  const canEditAddress = hasValidPostalCode
   const isFormValid =
     selectedUnit &&
     hasValidPostalCode &&
@@ -541,57 +542,65 @@ export default function DeliveryCalculator() {
             )}
           </div>
 
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-12 md:gap-5">
-            <div className="md:col-span-8">
-              <Label htmlFor="street">Rua *</Label>
-              <Input
-                id="street"
-                value={deliveryAddress.street}
-                onChange={(e) => handleAddressChange("street", e.target.value)}
-                placeholder="Nome da rua"
-              />
-            </div>
-            <div className="md:col-span-4">
-              <Label htmlFor="number">Número *</Label>
-              <Input
-                id="number"
-                value={deliveryAddress.number}
-                onChange={(e) => handleAddressChange("number", e.target.value)}
-                placeholder="123"
-              />
-            </div>
-          </div>
+          {canEditAddress ? (
+            <>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-12 md:gap-5">
+                <div className="md:col-span-8">
+                  <Label htmlFor="street">Rua *</Label>
+                  <Input
+                    id="street"
+                    value={deliveryAddress.street}
+                    onChange={(e) => handleAddressChange("street", e.target.value)}
+                    placeholder="Nome da rua"
+                  />
+                </div>
+                <div className="md:col-span-4">
+                  <Label htmlFor="number">Número *</Label>
+                  <Input
+                    id="number"
+                    value={deliveryAddress.number}
+                    onChange={(e) => handleAddressChange("number", e.target.value)}
+                    placeholder="123"
+                  />
+                </div>
+              </div>
 
-          <div>
-            <Label htmlFor="complement">Complemento</Label>
-            <Input
-              id="complement"
-              value={deliveryAddress.complement}
-              onChange={(e) => handleAddressChange("complement", e.target.value)}
-              placeholder="Apartamento, bloco, etc. (opcional)"
-            />
-          </div>
+              <div>
+                <Label htmlFor="complement">Complemento</Label>
+                <Input
+                  id="complement"
+                  value={deliveryAddress.complement}
+                  onChange={(e) => handleAddressChange("complement", e.target.value)}
+                  placeholder="Apartamento, bloco, etc. (opcional)"
+                />
+              </div>
 
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-5">
-            <div>
-              <Label htmlFor="neighborhood">Bairro *</Label>
-              <Input
-                id="neighborhood"
-                value={deliveryAddress.neighborhood}
-                onChange={(e) => handleAddressChange("neighborhood", e.target.value)}
-                placeholder="Nome do bairro"
-              />
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-5">
+                <div>
+                  <Label htmlFor="neighborhood">Bairro *</Label>
+                  <Input
+                    id="neighborhood"
+                    value={deliveryAddress.neighborhood}
+                    onChange={(e) => handleAddressChange("neighborhood", e.target.value)}
+                    placeholder="Nome do bairro"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="city">Cidade *</Label>
+                  <Input
+                    id="city"
+                    value={deliveryAddress.city}
+                    onChange={(e) => handleAddressChange("city", e.target.value)}
+                    placeholder="Nome da cidade"
+                  />
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="rounded-md border border-dashed border-border bg-muted/20 p-4 text-sm text-muted-foreground">
+              Digite o CEP para liberar os campos de endereço ou clique em iniciar sem CEP.
             </div>
-            <div>
-              <Label htmlFor="city">Cidade *</Label>
-              <Input
-                id="city"
-                value={deliveryAddress.city}
-                onChange={(e) => handleAddressChange("city", e.target.value)}
-                placeholder="Nome da cidade"
-              />
-            </div>
-          </div>
+          )}
         </div>
 
         {/* Botão Calcular */}
