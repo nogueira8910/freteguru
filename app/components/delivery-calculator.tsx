@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Separator } from "@/components/ui/separator"
-import { Calculator, AlertTriangle, Route } from "lucide-react"
+import { Calculator, AlertTriangle, Route, RotateCcw } from "lucide-react"
 import { geocodeAddressPrecise } from "@/lib/address-geocoding"
 import { formatPostalCode, lookupPostalCode, onlyPostalCodeDigits } from "@/lib/postal-code"
 
@@ -35,6 +35,15 @@ interface CalculationResult {
   distance: number
   fee: number
   routeInfo?: string
+}
+
+const emptyDeliveryAddress: DeliveryAddress = {
+  postalCode: "",
+  street: "",
+  number: "",
+  complement: "",
+  neighborhood: "",
+  city: "",
 }
 
 // Unidades com coordenadas pré-definidas
@@ -281,14 +290,7 @@ const calculateRealWorldDistance = async (
 
 export default function DeliveryCalculator() {
   const [selectedUnit, setSelectedUnit] = useState<string>("")
-  const [deliveryAddress, setDeliveryAddress] = useState<DeliveryAddress>({
-    postalCode: "",
-    street: "",
-    number: "",
-    complement: "",
-    neighborhood: "",
-    city: "",
-  })
+  const [deliveryAddress, setDeliveryAddress] = useState<DeliveryAddress>(emptyDeliveryAddress)
   const [result, setResult] = useState<CalculationResult | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string>("")
@@ -356,6 +358,16 @@ export default function DeliveryCalculator() {
     setError("")
     setResult(null)
     setShowDistanceAlert(false)
+  }
+
+  const handleClearData = () => {
+    setSelectedUnit("")
+    setDeliveryAddress(emptyDeliveryAddress)
+    setResult(null)
+    setError("")
+    setShowDistanceAlert(false)
+    setUsePostalCode(true)
+    setPostalCodeFeedback("")
   }
 
   const calculateFee = (distance: number, unitId: string): number => {
@@ -603,11 +615,24 @@ export default function DeliveryCalculator() {
           )}
         </div>
 
-        {/* Botão Calcular */}
-        <Button onClick={handleCalculate} disabled={!isFormValid || loading} className="w-full" size="lg">
-          <Calculator strokeWidth={1.5} className="h-4 w-4 mr-2" />
-          {loading ? "Calculando distância precisa..." : "Calcular Taxa"}
-        </Button>
+        {/* Ações */}
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-[auto_1fr]">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handleClearData}
+            disabled={loading || postalCodeLoading}
+            size="lg"
+            className="sm:w-44"
+          >
+            <RotateCcw strokeWidth={1.5} className="mr-2 h-4 w-4" />
+            Limpar dados
+          </Button>
+          <Button onClick={handleCalculate} disabled={!isFormValid || loading} className="w-full" size="lg">
+            <Calculator strokeWidth={1.5} className="h-4 w-4 mr-2" />
+            {loading ? "Calculando distância precisa..." : "Calcular Taxa"}
+          </Button>
+        </div>
 
         {/* Erro */}
         {error && (

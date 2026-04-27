@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Separator } from "@/components/ui/separator"
-import { MapPin, Search, AlertTriangle, CheckCircle, MessageCircle } from "lucide-react"
+import { MapPin, Search, AlertTriangle, CheckCircle, MessageCircle, RotateCcw } from "lucide-react"
 import { geocodeAddressPrecise } from "@/lib/address-geocoding"
 import { formatPostalCode, lookupPostalCode, onlyPostalCodeDigits } from "@/lib/postal-code"
 import InteractiveMap from "./interactive-map"
@@ -45,6 +45,15 @@ interface StoreResult {
 interface KMLPolygon {
   name: string
   coordinates: Array<{ lat: number; lon: number }>
+}
+
+const emptySearchAddress: SearchAddress = {
+  postalCode: "",
+  street: "",
+  number: "",
+  complement: "",
+  neighborhood: "",
+  city: "",
 }
 
 const KML_SOURCES = [
@@ -181,14 +190,7 @@ const units: Unit[] = [
 
 export default function StoreLocator() {
   const [selectedUnit, setSelectedUnit] = useState<string>("all")
-  const [searchAddress, setSearchAddress] = useState<SearchAddress>({
-    postalCode: "",
-    street: "",
-    number: "",
-    complement: "",
-    neighborhood: "",
-    city: "",
-  })
+  const [searchAddress, setSearchAddress] = useState<SearchAddress>(emptySearchAddress)
   const [result, setResult] = useState<StoreResult | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string>("")
@@ -429,6 +431,15 @@ export default function StoreLocator() {
     setResult(null)
   }
 
+  const handleClearData = () => {
+    setSelectedUnit("all")
+    setSearchAddress(emptySearchAddress)
+    setResult(null)
+    setError("")
+    setUsePostalCode(true)
+    setPostalCodeFeedback("")
+  }
+
   const hasValidPostalCode = !usePostalCode || onlyPostalCodeDigits(searchAddress.postalCode).length === 8
   const canEditAddress = hasValidPostalCode
   const isFormValid =
@@ -555,10 +566,23 @@ export default function StoreLocator() {
             )}
           </div>
 
-          <Button onClick={findResponsibleStore} disabled={!isFormValid || loading} className="w-full" size="lg">
-            <Search strokeWidth={1.5} className="h-4 w-4 mr-2" />
-            {loading ? "Buscando loja..." : "Identificar Loja"}
-          </Button>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-[auto_1fr]">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleClearData}
+              disabled={loading || postalCodeLoading}
+              size="lg"
+              className="sm:w-44"
+            >
+              <RotateCcw strokeWidth={1.5} className="mr-2 h-4 w-4" />
+              Limpar dados
+            </Button>
+            <Button onClick={findResponsibleStore} disabled={!isFormValid || loading} className="w-full" size="lg">
+              <Search strokeWidth={1.5} className="h-4 w-4 mr-2" />
+              {loading ? "Buscando loja..." : "Identificar Loja"}
+            </Button>
+          </div>
 
           {/* Erro */}
           {error && (
