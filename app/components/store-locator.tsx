@@ -10,6 +10,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Separator } from "@/components/ui/separator"
 import { MapPin, Search, AlertTriangle, CheckCircle, MessageCircle } from "lucide-react"
 import { geocodeAddressPrecise } from "@/lib/address-geocoding"
+import { formatPostalCode, lookupPostalCode, onlyPostalCodeDigits } from "@/lib/postal-code"
 import InteractiveMap from "./interactive-map"
 
 interface Unit {
@@ -26,6 +27,7 @@ interface Unit {
 }
 
 interface SearchAddress {
+  postalCode: string
   street: string
   number: string
   complement: string
@@ -172,6 +174,7 @@ const units: Unit[] = [
 export default function StoreLocator() {
   const [selectedUnit, setSelectedUnit] = useState<string>("all")
   const [searchAddress, setSearchAddress] = useState<SearchAddress>({
+    postalCode: "",
     street: "",
     number: "",
     complement: "",
@@ -182,6 +185,9 @@ export default function StoreLocator() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string>("")
   const [polygons, setPolygons] = useState<KMLPolygon[]>([])
+  const [usePostalCode, setUsePostalCode] = useState(true)
+  const [postalCodeLoading, setPostalCodeLoading] = useState(false)
+  const [postalCodeFeedback, setPostalCodeFeedback] = useState("")
 
   // Parse KML data on component mount
   useEffect(() => {
@@ -288,6 +294,11 @@ export default function StoreLocator() {
 
   // Função para encontrar a loja responsável
   const findResponsibleStore = async () => {
+    if (usePostalCode && onlyPostalCodeDigits(searchAddress.postalCode).length !== 8) {
+      setError("Informe um CEP válido ou use a opção iniciar sem CEP")
+      return
+    }
+
     if (!searchAddress.street || !searchAddress.number || !searchAddress.neighborhood || !searchAddress.city) {
       setError("Preencha todos os campos obrigatórios")
       return
@@ -344,7 +355,52 @@ export default function StoreLocator() {
     setError("")
   }
 
-  const isFormValid = searchAddress.street && searchAddress.number && searchAddress.neighborhood && searchAddress.city
+  const handlePostalCodeChange = async (value: string) => {
+    const formattedPostalCode = formatPostalCode(value)
+    const digits = onlyPostalCodeDigits(formattedPostalCode)
+
+    setSearchAddress((prev) => ({ ...prev, postalCode: formattedPostalCode }))
+    setResult(null)
+    setError("")
+    setPostalCodeFeedback("")
+
+    if (digits.length !== 8) return
+
+    setPostalCodeLoading(true)
+    try {
+      const address = await lookupPostalCode(digits)
+
+      if (!address) {
+        setPostalCodeFeedback("CEP não encontrado. Complete o endereço manualmente.")
+        return
+      }
+
+      setSearchAddress((prev) => ({
+        ...prev,
+        postalCode: formattedPostalCode,
+        street: address.street || prev.street,
+        neighborhood: address.neighborhood || prev.neighborhood,
+        city: address.city || prev.city,
+        complement: prev.complement || address.complement,
+      }))
+      setPostalCodeFeedback("Endereço preenchido pelo CEP. Complete os dados que faltarem.")
+    } catch (error) {
+      setPostalCodeFeedback("Não foi possível consultar o CEP agora. Complete o endereço manualmente.")
+    } finally {
+      setPostalCodeLoading(false)
+    }
+  }
+
+  const handlePostalCodeModeChange = (enabled: boolean) => {
+    setUsePostalCode(enabled)
+    setPostalCodeFeedback("")
+    setError("")
+    setResult(null)
+  }
+
+  const hasValidPostalCode = !usePostalCode || onlyPostalCodeDigits(searchAddress.postalCode).length === 8
+  const isFormValid =
+    hasValidPostalCode && searchAddress.street && searchAddress.number && searchAddress.neighborhood && searchAddress.city
 
   // Prepare search result for map
   const mapSearchResult = result
@@ -374,6 +430,35 @@ export default function StoreLocator() {
         <CardContent className="space-y-6 px-5 py-5 sm:px-6 lg:px-8 lg:py-7">
           <div className="space-y-4">
             <Label className="text-sm font-medium text-foreground">Endereço para consulta</Label>
+
+            <div className="rounded-md border border-border bg-muted/30 p-4">
+              <div className="flex flex-col gap-3 md:flex-row md:items-end">
+                <div className="flex-1">
+                  <Label htmlFor="search-postal-code">CEP {usePostalCode ? "*" : ""}</Label>
+                  <Input
+                    id="search-postal-code"
+                    value={searchAddress.postalCode}
+                    onChange={(e) => handlePostalCodeChange(e.target.value)}
+                    placeholder="00000-000"
+                    inputMode="numeric"
+                    disabled={!usePostalCode}
+                  />
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => handlePostalCodeModeChange(!usePostalCode)}
+                  className="md:w-44"
+                >
+                  {usePostalCode ? "Iniciar sem CEP" : "Usar CEP"}
+                </Button>
+              </div>
+              {(postalCodeLoading || postalCodeFeedback) && (
+                <p className="mt-2 text-xs text-muted-foreground">
+                  {postalCodeLoading ? "Consultando CEP..." : postalCodeFeedback}
+                </p>
+              )}
+            </div>
 
             <div className="grid grid-cols-1 gap-4 md:grid-cols-12 md:gap-5">
               <div className="md:col-span-8">

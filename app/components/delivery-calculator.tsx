@@ -10,6 +10,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Separator } from "@/components/ui/separator"
 import { Calculator, AlertTriangle, Route } from "lucide-react"
 import { geocodeAddressPrecise } from "@/lib/address-geocoding"
+import { formatPostalCode, lookupPostalCode, onlyPostalCodeDigits } from "@/lib/postal-code"
 
 interface Unit {
   id: string
@@ -22,6 +23,7 @@ interface Unit {
 }
 
 interface DeliveryAddress {
+  postalCode: string
   street: string
   number: string
   complement: string
@@ -280,6 +282,7 @@ const calculateRealWorldDistance = async (
 export default function DeliveryCalculator() {
   const [selectedUnit, setSelectedUnit] = useState<string>("")
   const [deliveryAddress, setDeliveryAddress] = useState<DeliveryAddress>({
+    postalCode: "",
     street: "",
     number: "",
     complement: "",
@@ -290,6 +293,9 @@ export default function DeliveryCalculator() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string>("")
   const [showDistanceAlert, setShowDistanceAlert] = useState(false)
+  const [usePostalCode, setUsePostalCode] = useState(true)
+  const [postalCodeLoading, setPostalCodeLoading] = useState(false)
+  const [postalCodeFeedback, setPostalCodeFeedback] = useState("")
 
   const selectedUnitData = units.find((unit) => unit.id === selectedUnit)
 
@@ -304,6 +310,51 @@ export default function DeliveryCalculator() {
     setDeliveryAddress((prev) => ({ ...prev, [field]: value }))
     setResult(null)
     setError("")
+    setShowDistanceAlert(false)
+  }
+
+  const handlePostalCodeChange = async (value: string) => {
+    const formattedPostalCode = formatPostalCode(value)
+    const digits = onlyPostalCodeDigits(formattedPostalCode)
+
+    setDeliveryAddress((prev) => ({ ...prev, postalCode: formattedPostalCode }))
+    setResult(null)
+    setError("")
+    setShowDistanceAlert(false)
+    setPostalCodeFeedback("")
+
+    if (digits.length !== 8) return
+
+    setPostalCodeLoading(true)
+    try {
+      const address = await lookupPostalCode(digits)
+
+      if (!address) {
+        setPostalCodeFeedback("CEP não encontrado. Complete o endereço manualmente.")
+        return
+      }
+
+      setDeliveryAddress((prev) => ({
+        ...prev,
+        postalCode: formattedPostalCode,
+        street: address.street || prev.street,
+        neighborhood: address.neighborhood || prev.neighborhood,
+        city: address.city || prev.city,
+        complement: prev.complement || address.complement,
+      }))
+      setPostalCodeFeedback("Endereço preenchido pelo CEP. Complete os dados que faltarem.")
+    } catch (error) {
+      setPostalCodeFeedback("Não foi possível consultar o CEP agora. Complete o endereço manualmente.")
+    } finally {
+      setPostalCodeLoading(false)
+    }
+  }
+
+  const handlePostalCodeModeChange = (enabled: boolean) => {
+    setUsePostalCode(enabled)
+    setPostalCodeFeedback("")
+    setError("")
+    setResult(null)
     setShowDistanceAlert(false)
   }
 
@@ -331,6 +382,11 @@ export default function DeliveryCalculator() {
   const handleCalculate = async () => {
     if (!selectedUnitData) {
       setError("Selecione uma unidade")
+      return
+    }
+
+    if (usePostalCode && onlyPostalCodeDigits(deliveryAddress.postalCode).length !== 8) {
+      setError("Informe um CEP válido ou use a opção iniciar sem CEP")
       return
     }
 
@@ -394,8 +450,10 @@ export default function DeliveryCalculator() {
     }
   }
 
+  const hasValidPostalCode = !usePostalCode || onlyPostalCodeDigits(deliveryAddress.postalCode).length === 8
   const isFormValid =
     selectedUnit &&
+    hasValidPostalCode &&
     deliveryAddress.street &&
     deliveryAddress.number &&
     deliveryAddress.neighborhood &&
@@ -453,6 +511,35 @@ export default function DeliveryCalculator() {
         {/* Endereço de Destino */}
         <div className="space-y-4">
           <Label className="text-sm font-medium text-foreground">Endereço de destino</Label>
+
+          <div className="rounded-md border border-border bg-muted/30 p-4">
+            <div className="flex flex-col gap-3 md:flex-row md:items-end">
+              <div className="flex-1">
+                <Label htmlFor="postal-code">CEP {usePostalCode ? "*" : ""}</Label>
+                <Input
+                  id="postal-code"
+                  value={deliveryAddress.postalCode}
+                  onChange={(e) => handlePostalCodeChange(e.target.value)}
+                  placeholder="00000-000"
+                  inputMode="numeric"
+                  disabled={!usePostalCode}
+                />
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => handlePostalCodeModeChange(!usePostalCode)}
+                className="md:w-44"
+              >
+                {usePostalCode ? "Iniciar sem CEP" : "Usar CEP"}
+              </Button>
+            </div>
+            {(postalCodeLoading || postalCodeFeedback) && (
+              <p className="mt-2 text-xs text-muted-foreground">
+                {postalCodeLoading ? "Consultando CEP..." : postalCodeFeedback}
+              </p>
+            )}
+          </div>
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-12 md:gap-5">
             <div className="md:col-span-8">
