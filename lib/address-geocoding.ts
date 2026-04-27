@@ -35,13 +35,13 @@ interface NominatimResult {
 const knownLocations: KnownLocation[] = [
   {
     aliases: ["rua ipu 12 botafogo rio de janeiro"],
-    lat: -22.9504,
-    lon: -43.1868,
+    lat: -22.9554915,
+    lon: -43.1928953,
   },
   {
     aliases: ["avenida das americas 7777 barra da tijuca rio de janeiro"],
-    lat: -23.0002,
-    lon: -43.3602,
+    lat: -23.0013736,
+    lon: -43.3858868,
   },
   {
     aliases: [
@@ -50,43 +50,43 @@ const knownLocations: KnownLocation[] = [
       "anibal de mendonca 132 ipanema",
       "anibal mendonca 132 ipanema",
     ],
-    lat: -22.982778,
-    lon: -43.210833,
+    lat: -22.9830484,
+    lon: -43.2111676,
   },
   {
     aliases: ["avenida ataulfo de paiva 270 leblon rio de janeiro"],
-    lat: -22.9841,
-    lon: -43.2235,
+    lat: -22.9833242,
+    lon: -43.2185146,
   },
   {
     aliases: ["rua nobrega 198 icarai niteroi"],
-    lat: -22.9097,
-    lon: -43.1057,
+    lat: -22.9039618,
+    lon: -43.1028635,
   },
   {
     aliases: ["avenida maracana 987 tijuca rio de janeiro"],
-    lat: -22.9266,
-    lon: -43.2359,
+    lat: -22.9219661,
+    lon: -43.2352278,
   },
   {
     aliases: ["estrada da gavea 899 sao conrado rio de janeiro"],
-    lat: -22.9964,
-    lon: -43.249,
+    lat: -22.9966097,
+    lon: -43.2600252,
   },
   {
     aliases: ["rua lauro muller 116 botafogo rio de janeiro"],
-    lat: -22.9493,
-    lon: -43.1781,
+    lat: -22.9571479,
+    lon: -43.1767367,
   },
   {
     aliases: ["smas trecho 1 zona industrial brasilia"],
-    lat: -15.808,
-    lon: -47.9494,
+    lat: -15.8340757,
+    lon: -47.9552193,
   },
   {
     aliases: ["rua natingui 1536 pinheiros sao paulo"],
-    lat: -23.5677,
-    lon: -46.702,
+    lat: -23.5595637,
+    lon: -46.6991795,
   },
   {
     aliases: ["rua engenheiro neves da rocha 538 itanhanga rio de janeiro"],

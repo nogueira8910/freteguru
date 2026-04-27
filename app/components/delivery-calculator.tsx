@@ -55,7 +55,7 @@ const units: Unit[] = [
     neighborhood: "Botafogo",
     city: "Rio de Janeiro",
     state: "RJ",
-    coordinates: { lat: -22.9504, lon: -43.1868 },
+    coordinates: { lat: -22.9554915, lon: -43.1928953 },
   },
   {
     id: "rdb",
@@ -64,7 +64,7 @@ const units: Unit[] = [
     neighborhood: "Barra da Tijuca",
     city: "Rio de Janeiro",
     state: "RJ",
-    coordinates: { lat: -23.0002, lon: -43.3602 },
+    coordinates: { lat: -23.0013736, lon: -43.3858868 },
   },
   {
     id: "ipanema",
@@ -73,7 +73,7 @@ const units: Unit[] = [
     neighborhood: "Ipanema",
     city: "Rio de Janeiro",
     state: "RJ",
-    coordinates: { lat: -22.982778, lon: -43.210833 },
+    coordinates: { lat: -22.9830484, lon: -43.2111676 },
   },
   {
     id: "rdl",
@@ -82,7 +82,7 @@ const units: Unit[] = [
     neighborhood: "Leblon",
     city: "Rio de Janeiro",
     state: "RJ",
-    coordinates: { lat: -22.9841, lon: -43.2235 },
+    coordinates: { lat: -22.9833242, lon: -43.2185146 },
   },
   {
     id: "icarai",
@@ -91,7 +91,7 @@ const units: Unit[] = [
     neighborhood: "Icaraí",
     city: "Niterói",
     state: "RJ",
-    coordinates: { lat: -22.9097, lon: -43.1057 },
+    coordinates: { lat: -22.9039618, lon: -43.1028635 },
   },
   {
     id: "tijuca",
@@ -100,7 +100,7 @@ const units: Unit[] = [
     neighborhood: "Tijuca",
     city: "Rio de Janeiro",
     state: "RJ",
-    coordinates: { lat: -22.9266, lon: -43.2359 },
+    coordinates: { lat: -22.9219661, lon: -43.2352278 },
   },
   {
     id: "fashion-mall",
@@ -109,7 +109,7 @@ const units: Unit[] = [
     neighborhood: "São Conrado",
     city: "Rio de Janeiro",
     state: "RJ",
-    coordinates: { lat: -22.9964, lon: -43.249 },
+    coordinates: { lat: -22.9966097, lon: -43.2600252 },
   },
   {
     id: "rio-sul",
@@ -118,7 +118,7 @@ const units: Unit[] = [
     neighborhood: "Botafogo",
     city: "Rio de Janeiro",
     state: "RJ",
-    coordinates: { lat: -22.9493, lon: -43.1781 },
+    coordinates: { lat: -22.9571479, lon: -43.1767367 },
   },
   {
     id: "bsb",
@@ -127,7 +127,7 @@ const units: Unit[] = [
     neighborhood: "Zona Industrial",
     city: "Brasília",
     state: "DF",
-    coordinates: { lat: -15.808, lon: -47.9494 },
+    coordinates: { lat: -15.8340757, lon: -47.9552193 },
   },
   {
     id: "sp",
@@ -136,7 +136,7 @@ const units: Unit[] = [
     neighborhood: "Pinheiros",
     city: "São Paulo",
     state: "SP",
-    coordinates: { lat: -23.5677, lon: -46.702 },
+    coordinates: { lat: -23.5595637, lon: -46.6991795 },
   },
 ]
 
